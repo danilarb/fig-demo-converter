@@ -78,7 +78,7 @@ def get_api(api_type):
 
 
 def token_check_and_refresh():
-    if oauth_details is not None and oauth_details.get('expires_at') >= time():
+    if oauth_details.get('expires_at') >= time():
         oauth.refresh_token()
 
 

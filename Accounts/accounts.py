@@ -1,50 +1,65 @@
+"""
+Converts the farm's accounts into the needed JSON format.
+"""
 import json
 import os
 
 import helpers
 
+# Constants
+SYSTEM_ACCOUNTS = {
+    'Accounts Payable': 'CREDITORS',
+    'Accounts Payable (Xero)': 'CREDITORS',
+    'Accounts Receivable': 'DEBTORS',
+    'Accounts Receivable (Xero)': 'DEBTORS',
+    'Bank Revaluations': 'BANKREVALUATIONS',
+    'GST': 'GST',
+    'Historical Adjustment': 'HISTORICAL',
+    'Realised Currency Gains': 'REALISEDCURRENCYGAIN',
+    'Retained Earnings': 'RETAINEDEARNINGS',
+    'Rounding': 'ROUNDING',
+    'Tracking Transfers': 'TRACKINGTRANSFERS',
+    'Unpaid Expense Claims': 'UNPAIDEXPCLM',
+    'Unrealised Currency Gains': 'UNREALISEDCURRENCYGAIN',
+    'Wages Payable': 'WAGESPAYABLE',
+    'Sales Tax': 'GST',
+    'Realized Currency Gains': 'REALISEDCURRENCYGAIN',
+    'Unrealized Currency Gains': 'UNREALISEDCURRENCYGAIN',
+}
 
-def get_accounts_api():
+
+def get_accounts_api() -> dict:
+    """
+    Returns the accounts API request data.
+    :return: Dictionary of farm accounts.
+    """
     return helpers.get_api('accounts')
 
 
-def get_accounts():
+def get_accounts() -> dict:
+    """
+    Returns the farm's accounts from the JSON file or API request.
+    :return: Dictionary of farm accounts.
+    """
     # Check if file exists
     if not os.path.exists(os.path.join(os.path.dirname(__file__), 'original_accounts.json')):
         return get_accounts_api()
     # Check if file is empty
-    elif os.path.getsize(os.path.join(os.path.dirname(__file__), 'original_accounts.json')) == 0:
+    if os.path.getsize(os.path.join(os.path.dirname(__file__), 'original_accounts.json')) == 0:
         return get_accounts_api()
     # Return file contents
-    else:
-        with open(os.path.join(os.path.dirname(__file__), 'original_accounts.json'), 'r') as file:
-            accounts = json.load(file)
-            return accounts
+    with open(os.path.join(os.path.dirname(__file__), 'original_accounts.json'), 'r') as file:
+        accounts = json.load(file)
+        return accounts
 
 
-def convert_accounts(data_list):
+def convert_accounts(data_list: dict) -> None:
+    """
+    Converts the farm's accounts from API into the needed JSON format.
+    Found in accounts.json
+    :param data_list: Dictionary of farm accounts.
+    """
     new_list = []
-
-    system_accounts = {
-        'Accounts Payable': 'CREDITORS',
-        'Accounts Payable (Xero)': 'CREDITORS',
-        'Accounts Receivable': 'DEBTORS',
-        'Accounts Receivable (Xero)': 'DEBTORS',
-        'Bank Revaluations': 'BANKREVALUATIONS',
-        'GST': 'GST',
-        'Historical Adjustment': 'HISTORICAL',
-        'Realised Currency Gains': 'REALISEDCURRENCYGAIN',
-        'Retained Earnings': 'RETAINEDEARNINGS',
-        'Rounding': 'ROUNDING',
-        'Tracking Transfers': 'TRACKINGTRANSFERS',
-        'Unpaid Expense Claims': 'UNPAIDEXPCLM',
-        'Unrealised Currency Gains': 'UNREALISEDCURRENCYGAIN',
-        'Wages Payable': 'WAGESPAYABLE',
-        'Sales Tax': 'GST',
-        'Realized Currency Gains': 'REALISEDCURRENCYGAIN',
-        'Unrealized Currency Gains': 'UNREALISEDCURRENCYGAIN',
-    }
-
     errors = False
 
     for key, item in data_list.items():
@@ -61,10 +76,11 @@ def convert_accounts(data_list):
         name = item.get('name')
         is_system_account = item.get('system_account')
 
-        if name in system_accounts and is_system_account:
-            obj = create_account(code, name, item, system_accounts.get(name))
-        elif name not in system_accounts and is_system_account:
-            print(f"Error: {name} is a system account but is not in the system_accounts dictionary.")
+        if name in SYSTEM_ACCOUNTS and is_system_account:
+            obj = create_account(code, name, item, SYSTEM_ACCOUNTS.get(name))
+        elif name not in SYSTEM_ACCOUNTS and is_system_account:
+            print(
+                f"Error: {name} is a system account but is not in the system_accounts dictionary.")
             errors = True
             break
         else:
@@ -76,15 +92,22 @@ def convert_accounts(data_list):
         new_list.append(obj)
 
     if not errors:
-        new = open(os.path.join(os.path.dirname(__file__), 'accounts.json'), 'w')
-        json.dump(new_list, new, ensure_ascii=False, indent=4)
-        new.close()
+        with open(os.path.join(os.path.dirname(__file__), 'accounts.json'), 'w') as new:
+            json.dump(data_list, new, ensure_ascii=False, indent=4)
         print('Accounts converted successfully.')
     else:
         print('Accounts not converted due to errors.')
 
 
-def create_account(code, name, item, system_account):
+def create_account(code: str | int, name: str, item: dict, system_account: str) -> dict:
+    """
+    Creates an account object.
+    :param code: Account code.
+    :param name: Account name.
+    :param item: Original account object.
+    :param system_account: System account name
+    :return: Account dictionary.
+    """
     return {
         'Code': code,
         'Name': name,
@@ -96,6 +119,9 @@ def create_account(code, name, item, system_account):
 
 
 def convert():
+    """
+    Converts the farm's accounts into the needed JSON format.
+    """
     accounts = get_accounts()
     if accounts is not None:
         convert_accounts(accounts)

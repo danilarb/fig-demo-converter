@@ -1,15 +1,21 @@
-import OAuth2.oauth as oauth
-import Accounts.accounts as accounts
-import Livestock.livestock as livestock
+"""
+Main file for the program.
+"""
+from OAuth2 import oauth
+from Accounts import accounts
+from Livestock import livestock
 import helpers
 
 
 def main():
-    oauth.setup_oauth2()
+    """
+    Main function.
+    """
+    oauth.initialise_oauth2()
     accounts.convert()
-    helpers.token_check_and_refresh()
+    helpers.refresh_token_if_expired()
     livestock.convert()
-    helpers.token_check_and_refresh()
+    helpers.refresh_token_if_expired()
     print('Done!')
 
 

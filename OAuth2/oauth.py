@@ -20,7 +20,7 @@ OAUTH_OBJ_ERROR_MESSAGE = 'Error creating OAuth2Session object:'
 oauth_session = None
 
 
-def get_oauth_session():
+def get_oauth_session() -> OAuth2Session | None:
     """
     Returns an OAuth2 session object.
     :return: OAuth2 session object.
@@ -48,7 +48,7 @@ def get_oauth_session():
     return oauth_session
 
 
-def get_authorization_code():
+def get_authorization_code() -> str | None:
     """
     Prompts the user to enter the authorization code.
     :return: The authorization code entered by the user.
@@ -66,7 +66,7 @@ def get_authorization_code():
         signal.alarm(0)
 
 
-def get_access_token():
+def get_access_token() -> dict | None:
     """
     Fetches an OAuth2 access token for the application.
     :return: Token dictionary if successful, None otherwise.

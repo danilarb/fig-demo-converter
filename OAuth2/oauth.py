@@ -112,4 +112,4 @@ def initialise_oauth2():
         if token is not None:
             save_oauth_details(token, OAUTH_FILE_PATH)
     else:
-        helpers.token_check_and_refresh()
+        helpers.refresh_token_if_expired()

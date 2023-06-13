@@ -1,7 +1,12 @@
+"""
+Helper functions.
+- OAuth
+- API requests
+"""
 import json
 import os
-import requests
 from time import time
+import requests
 from dotenv import load_dotenv
 
 from OAuth2 import oauth
@@ -93,14 +98,13 @@ def get_api(api_type: str, query_params: dict = None):
     :return: JSON-encoded content of a response if successful, None otherwise.
     """
     url = get_url(api_type)
-    request = requests.get(url, headers=get_headers(), params=query_params or {})
+    request = requests.get(url, headers=get_headers(), params=query_params or {}, timeout=10)
     if request.status_code == 200:
         return request.json()
-    else:
-        print('Error getting ' + api_type)
-        print(request.status_code)
-        print(request.text)
-        return None
+    print('Error getting ' + api_type)
+    print(request.status_code)
+    print(request.text)
+    return None
 
 
 def refresh_token_if_expired(force_refresh: bool = False):

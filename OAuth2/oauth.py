@@ -4,9 +4,15 @@ from requests_oauthlib import OAuth2Session
 
 import helpers
 
+oauth_session = None
+
 
 def get_oauth_session():
-    return OAuth2Session(
+    global oauth_session
+    if oauth_session is not None:
+        return oauth_session
+
+    oauth_session = OAuth2Session(
         helpers.client_id,
         token=helpers.get_oauth_details(),
         auto_refresh_url=helpers.token_url,
@@ -18,15 +24,27 @@ def get_oauth_session():
         token_updater=save_oauth_details,
     )
 
+    return oauth_session
 
-def get_access_token(client_secret):
+
+def get_access_token():
     oauth = get_oauth_session()
     authorization_url, state = oauth.authorization_url(helpers.auth_url)
     print('Please go to the following URL and authorize the application:', authorization_url)
 
     authorization_code = input('Enter the authorization code: ')
 
-    return oauth.fetch_token(helpers.token_url, code=authorization_code, client_secret=client_secret)
+    return oauth.fetch_token(helpers.token_url, code=authorization_code, client_secret=helpers.client_secret)
+
+
+def refresh_token():
+    oauth = get_oauth_session()
+    token = oauth.refresh_token(helpers.token_url,
+                                client_id=helpers.client_id,
+                                client_secret=helpers.client_secret,
+                                refresh_token=helpers.get_oauth_details().get('refresh_token'))
+    helpers.reset_oauth_details()
+    save_oauth_details(token)
 
 
 def save_oauth_details(token, file_path=os.path.join(os.path.dirname(__file__), 'oauth.json')):
@@ -35,28 +53,10 @@ def save_oauth_details(token, file_path=os.path.join(os.path.dirname(__file__), 
 
 
 def setup_oauth2():
-    client_id = helpers.client_id
-    client_secret = helpers.client_secret
     oauth_file_path = os.path.join(os.path.dirname(__file__), 'oauth.json')
 
-    if not os.path.exists(oauth_file_path):
-        token = get_access_token(client_secret)
+    if helpers.get_access_token() is None:
+        token = get_access_token()
         save_oauth_details(token, oauth_file_path)
-
-    elif os.path.getsize(oauth_file_path) == 0:
-        token = get_access_token(client_secret)
-        save_oauth_details(token, oauth_file_path)
-
     else:
-        if helpers.get_access_token() is None:
-            token = get_access_token(client_secret)
-            save_oauth_details(token, oauth_file_path)
-        else:
-            oauth_details = helpers.get_oauth_details()
-            if oauth_details is not None:
-                oauth = get_oauth_session()
-                helpers.access_token = None
-                token = oauth.refresh_token(helpers.token_url, client_id=client_id,
-                                            client_secret=client_secret,
-                                            refresh_token=oauth_details.get('refresh_token'))
-                save_oauth_details(token, oauth_file_path)
+        helpers.token_check_and_refresh()

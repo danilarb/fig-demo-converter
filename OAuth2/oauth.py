@@ -1,3 +1,6 @@
+"""
+OAuth2 authentication process.
+"""
 import getpass
 import json
 import os
@@ -74,7 +77,9 @@ def get_access_token():
 
     try:
         authorization_code = get_authorization_code()
-        return oauth.fetch_token(helpers.TOKEN_URL, code=authorization_code, client_secret=helpers.CLIENT_SECRET)
+        return oauth.fetch_token(helpers.TOKEN_URL,
+                                 code=authorization_code,
+                                 client_secret=helpers.CLIENT_SECRET)
     except (HTTPError, Timeout, ConnectionError) as e:
         print(AUTH_ERROR_MESSAGE, e)
         return None

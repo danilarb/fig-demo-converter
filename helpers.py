@@ -1,9 +1,7 @@
 import json
 import os
-from time import time
-
 import requests
-
+from time import time
 from dotenv import load_dotenv
 
 from OAuth2 import oauth

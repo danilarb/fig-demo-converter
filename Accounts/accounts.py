@@ -1,5 +1,6 @@
 import json
 import os
+
 import helpers
 
 
@@ -18,7 +19,6 @@ def get_accounts():
     else:
         with open(os.path.join(os.path.dirname(__file__), 'original_accounts.json'), 'r') as file:
             accounts = json.load(file)
-            file.close()
             return accounts
 
 

@@ -162,6 +162,7 @@ def convert_trackers(trackers):
             'SalesAccount': int(sale_account.get('code')),
             'StockClasses': []
         }
+
         for stock_class in tracker.get('stock_classes'):
             trackers_dict[tracker.get('name')]['StockClasses'].append({
                 'Name': stock_class.get('name'),

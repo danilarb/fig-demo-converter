@@ -6,6 +6,8 @@ Helper functions.
 import json
 import os
 from time import time
+from typing import Any
+
 import requests
 from dotenv import load_dotenv
 
@@ -75,29 +77,35 @@ def get_access_token():
     return None
 
 
-def get_url(api_type: str) -> str:
+def get_url(api_type: str, path_vars: list = None) -> str:
     """
     Returns the URL for the specified API.
+    :param path_vars:
     :param api_type: String from: 'accounts', 'livestock_list', 'livestock_transactions'
     :return: API URL
     """
     match api_type:
         case 'accounts':
             return f'{API_URL}/farms/{FARM_ID}/accounts'
+        case 'account':
+            return f'{API_URL}/farms/{FARM_ID}/account/{path_vars[0]}'
         case 'livestock_list':
             return f'{API_URL}/farms/{FARM_ID}/livestock/trackers'
         case 'livestock_transactions':
             return f'{API_URL}/farms/{FARM_ID}/livestock/transactions'
+        case 'livestock_account_mappings':
+            return f'{API_URL}/farms/{FARM_ID}/livestock/{path_vars[0]}/account_mappings'
 
 
-def get_api(api_type: str, query_params: dict = None):
+def get_api(api_type: str, query_params: dict = None, path_vars: list = None) -> Any | None:
     """
     Returns the JSON response from the specified GET request.
+    :param path_vars:
     :param api_type: String from: 'accounts', 'livestock_list', 'livestock_transactions'
     :param query_params: dictionary of query parameters
     :return: JSON-encoded content of a response if successful, None otherwise.
     """
-    url = get_url(api_type)
+    url = get_url(api_type, path_vars)
     request = requests.get(url, headers=get_headers(), params=query_params or {}, timeout=10)
     if request.status_code == 200:
         return request.json()

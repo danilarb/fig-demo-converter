@@ -64,7 +64,7 @@ def convert_accounts(data_list: dict) -> None:
     revenue = []
     equity = []
 
-    for key, item in data_list.items():
+    for item in data_list.values():
         code = item.get('code')
 
         if code is None:
@@ -101,15 +101,13 @@ def convert_accounts(data_list: dict) -> None:
         new_list.append(obj)
 
     if not errors:
-        with open(os.path.join(os.path.dirname(__file__), 'accounts.json'), 'w') as new:
+        with open(os.path.join(os.path.dirname(__file__), 'accounts.json'), 'w', encoding='utf-8') as new:
             json.dump(new_list, new, ensure_ascii=False, indent=4)
         print('Accounts converted successfully.')
-        with open(os.path.join(os.path.dirname(__file__), 'revenue.json'), 'w') as new:
+        with open(os.path.join(os.path.dirname(__file__), 'revenue.json'), 'w', encoding='utf-8') as new:
             json.dump(revenue, new, ensure_ascii=False, indent=4)
-        print('revenue converted successfully.')
-        with open(os.path.join(os.path.dirname(__file__), 'equity.json'), 'w') as new:
+        with open(os.path.join(os.path.dirname(__file__), 'equity.json'), 'w', encoding='utf-8') as new:
             json.dump(equity, new, ensure_ascii=False, indent=4)
-        print('equity converted successfully.')
     else:
         print('Accounts not converted due to errors.')
 

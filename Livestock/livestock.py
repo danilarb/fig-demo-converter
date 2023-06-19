@@ -103,7 +103,6 @@ def convert_transactions(transactions: list, trackers: list):
     for transaction in transactions:
         date_string = transaction.get('accrual_date').get('date')
         date_format = "%Y-%m-%d %H:%M:%S"
-
         date_object = datetime.strptime(date_string, date_format)
 
         new_transaction = {
@@ -118,8 +117,8 @@ def convert_transactions(transactions: list, trackers: list):
 
         if transaction.get('amount'):
             new_transaction['Amount'] = abs(transaction.get('amount'))
-        if transaction.get('weight'):
-            new_transaction['Weight'] = transaction.get('weight')
+        if transaction.get('weight_per_head') == 0 or transaction.get('weight_per_head'):
+            new_transaction['Weight'] = transaction.get('weight_per_head')
         if transaction.get('type'):
             new_transaction['Type'] = transaction.get('type')
         else:

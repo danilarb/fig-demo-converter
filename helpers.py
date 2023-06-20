@@ -119,6 +119,7 @@ def refresh_token_if_expired(force_refresh: bool = False):
     """
     Checks if the access token is still valid and refreshes it if necessary.
     """
+    global oauth_details
     if force_refresh or oauth_details.get('expires_at', 0) <= time():
         oauth.refresh_token()
 

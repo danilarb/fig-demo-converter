@@ -93,7 +93,7 @@ def convert_accounts(data_list: dict) -> None:
 
         if obj['Class'] == 'REVENUE':
             revenue.append(obj.get('Code'))
-        elif obj['Class'] == 'EQUITY':
+        elif obj['Class'] in ['EQUITY', 'LIABILITY', 'ASSET']:
             equity.append(obj.get('Code'))
         elif obj['SystemAccount'] == 'GST':
             equity.append(obj.get('Code'))

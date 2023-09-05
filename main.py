@@ -18,6 +18,8 @@ def main():
     livestock.convert()
     helpers.refresh_token_if_expired()
     transactions.convert()
+    # transactions.remove_duplicate_livestock_transactions()
+    # transactions.remove_duplicate_crop_transactions()
     print('Done!')
 
 

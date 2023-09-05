@@ -50,7 +50,7 @@ def create_cashflows():
 
     with open(os.path.join(os.path.dirname(__file__), 'actuals_cashflow.json'), 'w', encoding='utf-8') as file:
         json.dump(actuals_cashflow, file, indent=4)
-    with open(os.path.join(os.path.dirname(__file__), 'forecast_cashflow.json'), 'w', encoding='utf-8) as file:
+    with open(os.path.join(os.path.dirname(__file__), 'forecast_cashflow.json'), 'w', encoding='utf-8') as file:
         json.dump(forecast_cashflow, file, indent=4)
 
 

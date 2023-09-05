@@ -171,6 +171,7 @@ def convert():
     transactions += convert_transactions_from_json(transactions_json)
     with open(os.path.join(os.path.dirname(__file__), 'transactions.json'), 'w', encoding='utf-8') as file:
         json.dump(transactions, file, indent=4)
+    print('Transactions converted successfully.')
 
 
 def remove_duplicate_livestock_transactions():

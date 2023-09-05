@@ -85,6 +85,7 @@ def get_transactions() -> list | None:
 
 def convert_transactions(transactions: list, trackers: list):
     """
+    NEEDS A REFACTOR
     Converts the farm's livestock transactions from API into the needed JSON format.
     :param transactions: List of livestock transactions.
     :param trackers: List of livestock trackers.
@@ -205,6 +206,7 @@ def convert_trackers(trackers):
         dir_path = os.path.join(parent_dir, tracker.get('name'))
         with open(os.path.join(dir_path, 'tracker.json'), 'w', encoding='utf-8') as file:
             json.dump(trackers_dict.get(tracker.get('name')), file, indent=4)
+    print('Livestock trackers and transactions converted successfully.')
 
 
 def convert():

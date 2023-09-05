@@ -78,7 +78,7 @@ def get_transactions() -> list | None:
     if os.path.getsize(os.path.join(os.path.dirname(__file__), 'original_livestock.json')) == 0:
         return get_transactions_api(get_transactions_total_api())
     # Return file contents
-    with open(os.path.join(os.path.dirname(__file__), 'original_livestock.json'), 'r') as file:
+    with open(os.path.join(os.path.dirname(__file__), 'original_livestock.json'), 'r', encoding='utf-8') as file:
         transactions = json.load(file)
         return transactions
 
@@ -101,9 +101,29 @@ def convert_transactions(transactions: list, trackers: list):
         trackers_transactions_dict[tracker.get('name')] = []
 
     for transaction in transactions:
+        tracker = trackers_dict.get(transaction.get('tracker_id'))
+        if tracker is None:
+            continue
+        tracker_name = tracker.get('tracker')
         date_string = transaction.get('accrual_date').get('date')
         date_format = "%Y-%m-%d %H:%M:%S"
         date_object = datetime.strptime(date_string, date_format)
+
+        if transaction.get('tracker_id') is None:
+            continue
+
+        if trackers_dict.get(transaction.get('tracker_id')) is None:
+            continue
+
+        if transaction.get('transition') == 'opening':
+            continue
+
+        if transaction.get('transition') == 'aging_in':
+            trackers_transactions_dict[tracker_name][-1]['TransferIn'] = trackers_dict\
+                .get(transaction.get('tracker_id'))\
+                .get('stock_classes')\
+                .get(transaction.get('stock_class_id'))
+            continue
 
         new_transaction = {
             'StockClass': trackers_dict.get(transaction.get('tracker_id'))
@@ -111,28 +131,40 @@ def convert_transactions(transactions: list, trackers: list):
             .get(transaction.get('stock_class_id')),
             'Transition': transaction.get('transition'),
             'Quantity': transaction.get('quantity'),
-            'Year': date_object.year - 2023,
+            'Year': date_object.year - helpers.get_current_year(),
             'Month': date_object.month,
         }
 
         if transaction.get('amount'):
             new_transaction['Amount'] = abs(transaction.get('amount'))
+
         if transaction.get('weight_per_head') == 0 or transaction.get('weight_per_head'):
             new_transaction['Weight'] = transaction.get('weight_per_head')
+
         if transaction.get('type'):
             new_transaction['Type'] = transaction.get('type')
         else:
-            new_transaction['Type'] = None
+            find_transaction = new_transaction.copy()
+            find_transaction['Type'] = None
 
-        trackers_transactions_dict[trackers_dict.get(transaction.get('tracker_id')).get('tracker')]\
-            .append(new_transaction)
+            if find_transaction in trackers_transactions_dict[tracker_name]:
+                find_transaction['Type'] = 'forecast'
+
+                if find_transaction in trackers_transactions_dict[tracker_name]:
+                    continue
+
+                new_transaction['Type'] = 'forecast'
+            else:
+                new_transaction['Type'] = None
+
+        trackers_transactions_dict[tracker_name].append(new_transaction)
 
     parent_dir = os.path.dirname(__file__)
 
     for tracker, transactions_list in trackers_transactions_dict.items():
         dir_path = os.path.join(parent_dir, tracker)
         os.makedirs(dir_path, exist_ok=True)
-        with open(os.path.join(dir_path, 'transactions.json'), 'w') as file:
+        with open(os.path.join(dir_path, 'transactions.json'), 'w', encoding='utf-8') as file:
             json.dump(transactions_list, file, indent=4)
 
 
@@ -171,7 +203,7 @@ def convert_trackers(trackers):
 
     for tracker in trackers:
         dir_path = os.path.join(parent_dir, tracker.get('name'))
-        with open(os.path.join(dir_path, 'tracker.json'), 'w') as file:
+        with open(os.path.join(dir_path, 'tracker.json'), 'w', encoding='utf-8') as file:
             json.dump(trackers_dict.get(tracker.get('name')), file, indent=4)
 
 

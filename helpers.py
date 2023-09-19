@@ -25,6 +25,9 @@ TOKEN_URL = os.environ['TOKEN_URL']
 AUTH_URL = os.environ['AUTH_URL']
 REDIRECT_URL = os.environ['REDIRECT_URI']
 FARM_COUNTRY = os.environ['FARM_COUNTRY']
+USER_NAME = os.environ['USER_NAME']
+PASSWORD = os.environ['PASSWORD']
+CROP_URL = os.environ['CROP_URL']
 
 # Global Variables
 OAUTH_DETAILS = None

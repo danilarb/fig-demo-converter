@@ -19,15 +19,22 @@ SYSTEM_ACCOUNTS = {
     'GST': 'GST',
     'Refunds/Payments': 'GSTPAYMENTS',
     'Historical Adjustment': 'HISTORICAL',
+    'Historical Adjustment8': 'HISTORICAL',
     'Realised Currency Gains': 'REALISEDCURRENCYGAIN',
     'Retained Earnings': 'RETAINEDEARNINGS',
+    'Retained earnings': 'RETAINEDEARNINGS',
     'Rounding': 'ROUNDING',
+    'Rounding8': 'ROUNDING',
     'Tracking Transfers': 'TRACKINGTRANSFERS',
+    'Tracking Transfers8': 'TRACKINGTRANSFERS',
     'Unpaid Expense Claims': 'UNPAIDEXPCLM',
     'Unrealised Currency Gains': 'UNREALISEDCURRENCYGAIN',
     'Wages Payable': 'WAGESPAYABLE',
+    'Wages control account': 'WAGESPAYABLE',
     'Sales Tax': 'GST',
+    'Vat control account': 'GST',
     'Realized Currency Gains': 'REALISEDCURRENCYGAIN',
+    'Unpaid expense claims (3564)': 'UNPAIDEXPCLM',
     'Unrealized Currency Gains': 'UNREALISEDCURRENCYGAIN',
     'Unapplied Cash Payment Income': 'UnappliedCashPaymentIncome',
     'Current Year Earnings': 'CURRENTYEAREARNINGS',
@@ -77,6 +84,10 @@ def convert_accounts(data_list: dict) -> None:
             code = int(code)
         except TypeError:
             # Occurs when code is None/null
+            pass
+        except ValueError:
+            # Occurs when code is a string
+            code = None
             pass
 
         name = item.get('name')

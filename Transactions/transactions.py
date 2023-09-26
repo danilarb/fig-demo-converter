@@ -265,14 +265,13 @@ def crop_transaction_affected(invoice: dict, transaction: dict, all_accounts: li
     :param all_accounts: list of all account
     :return: True or False
     """
-    invoice_date = datetime.fromisoformat(invoice.get('accrual_date'))
     invoice_accounts = resolve_account(invoice.get('lines')[0]['account'], all_accounts)
 
     if transaction.get('Account') not in invoice_accounts:
         return False
-    if transaction.get('Year') != invoice_date.year - helpers.get_current_year():
+    if transaction.get('Year') != invoice.get('year'):
         return False
-    if transaction.get('Month') != invoice_date.month:
+    if transaction.get('Month') != invoice.get('month'):
         return False
     if float(transaction.get('Amount')) != float(invoice.get('lines')[0]['amount']):
         return False

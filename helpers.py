@@ -102,7 +102,7 @@ def get_url(api_type: str, path_vars: list = None) -> str:
     """
     Returns the URL for the specified API.
     :param path_vars:
-    :param api_type: String from: 'accounts', 'livestock_list', 'livestock_transactions'
+    :param api_type: String from: 'accounts', 'account', 'livestock_list', 'livestock_transactions', 'livestock_account_mappings', 'cashflow'
     :return: API URL
     """
     match api_type:
